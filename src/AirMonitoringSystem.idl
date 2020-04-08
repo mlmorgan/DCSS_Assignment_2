@@ -1,0 +1,43 @@
+module AirMonitoringSystem {
+    struct NoxReading {
+        double date;
+        string station_name;
+        long value;
+    };
+
+    struct ServerRef {
+        string name;
+        string location;
+        string ior;
+    };
+
+    typedef sequence<NoxReading> Log_of_alarm_readings;
+    typedef sequence<NoxReading> Set_of_readings;
+    typedef sequence<ServerRef> List_of_servers;
+
+    interface MonitoringStation {
+        readonly attribute string name;
+        readonly attribute string location;
+        NoxReading get_reading();
+        void activate();
+        void deactivate();
+        void reset();
+    };
+
+    interface RegionalCentre {
+        readonly attribute string name;
+        readonly attribute string location;
+        readonly attribute List_of_servers List_of_stations;
+        readonly attribute Log_of_alarm_readings log;
+        void raise_alarm(in NoxReading alarmReading);
+        Set_of_readings take_readings();
+        void add_monitoring_station(in string name, in string location, in string station_ior);
+    };
+
+    interface MonitoringCentre {
+        readonly attribute List_of_servers List_of_centres;
+        void raise_alarm(in NoxReading alarm_reading);
+        void register_agency(in string name, in string contact_details, in string area_of_interest);
+        void register_regional_centre(in string name, in string location, in string centre_ior);
+    };
+};
