@@ -10,91 +10,14 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$USER_HOME$/dev/uni/dcss/jacorb-3.9-binary/jacorb-3.9/lib/antlr-2.7.2.jar!/" />
+          <root url="file://$USER_HOME$/dev/uni/dcss/jacorb-3.9/lib" />
         </CLASSES>
         <JAVADOC />
+        <NATIVE>
+          <root url="file://$USER_HOME$/dev/uni/dcss/jacorb-3.9/lib" />
+        </NATIVE>
         <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$USER_HOME$/dev/uni/dcss/jacorb-3.9-binary/jacorb-3.9/lib/idl.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$USER_HOME$/dev/uni/dcss/jacorb-3.9-binary/jacorb-3.9/lib/jacorb-3.9.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$USER_HOME$/dev/uni/dcss/jacorb-3.9-binary/jacorb-3.9/lib/jacorb-omgapi-3.9.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$USER_HOME$/dev/uni/dcss/jacorb-3.9-binary/jacorb-3.9/lib/jacorb-services-3.9.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$USER_HOME$/dev/uni/dcss/jacorb-3.9-binary/jacorb-3.9/lib/picocontainer-1.2.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$USER_HOME$/dev/uni/dcss/jacorb-3.9-binary/jacorb-3.9/lib/slf4j-api-1.7.14.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$USER_HOME$/dev/uni/dcss/jacorb-3.9-binary/jacorb-3.9/lib/slf4j-jdk14-1.7.14.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$USER_HOME$/dev/uni/dcss/jacorb-3.9-binary/jacorb-3.9/lib/wrapper-3.1.0.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$USER_HOME$/dev/uni/dcss/jboss-rmi-api_1.0_spec-1.0.6.Final.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
+        <jarDirectory url="file://$USER_HOME$/dev/uni/dcss/jacorb-3.9/lib" recursive="false" />
       </library>
     </orderEntry>
   </component>

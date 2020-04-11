@@ -1,8 +1,7 @@
-import AirMonitoringSystem.MonitoringCentrePOA;
-import AirMonitoringSystem.NoxReading;
-import AirMonitoringSystem.ServerRef;
+import AirMonitoringSystem.*;
 
 import org.omg.CORBA.*;
+import org.omg.CosNaming.*;
 import org.omg.PortableServer.*;
 import org.omg.PortableServer.POA;
 
@@ -22,15 +21,15 @@ class MonitoringCentreServant extends MonitoringCentrePOA {
     }
 
     public void raise_alarm(NoxReading alarm_reading) {
-
+        parent.addMessage("Alarm raised!\n\n");
     }
 
     public void register_agency(String name, String contact_details, String area_of_interest) {
 
     }
 
-    public void register_regional_centre(String name, String location, String centre_ior) {
-
+    public void register_regional_centre(String name, String location) {
+        parent.addMessage("Regional Centre registered");
     }
 
 }
@@ -47,17 +46,32 @@ class MonitoringCentre extends JFrame {
             POA rootpoa = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
             rootpoa.the_POAManager().activate();
 
-            // create servant and register it with the ORB
-            MonitoringCentreServant monitoringCentreRef = new MonitoringCentreServant((this));
+            //Create the servant object
+            MonitoringCentreServant monitoringCentreRef = new MonitoringCentreServant(this);
 
-            // get the 'stringified IOR'
+            // Register it with the ORB
             org.omg.CORBA.Object ref = rootpoa.servant_to_reference(monitoringCentreRef);
-            String stringified_ior = orb.object_to_string(ref);
+            AirMonitoringSystem.MonitoringCentre mcref = MonitoringCentreHelper.narrow(ref);
 
-            // Save IOR to file
-            BufferedWriter out = new BufferedWriter(new FileWriter("server.ref"));
-            out.write(stringified_ior);
-            out.close();
+            // Get a reference to the naming service
+            org.omg.CORBA.Object nameServiceObj = orb.resolve_initial_references("NameService");
+            if (nameServiceObj == null) {
+                System.out.println("nameServiceObj = null");
+                return;
+            }
+
+            // Use NamingContextExt which is part of the Interoperable
+            // Naming Service (INS) specification.
+            NamingContextExt nameService = NamingContextExtHelper.narrow(nameServiceObj);
+            if (nameService == null) {
+                System.out.println("nameService = null");
+                return;
+            }
+
+            // bind the Count object in the Naming service
+            String name = "monitoring_centre";
+            NameComponent[] monitoringCentreName = nameService.to_name(name);
+            nameService.rebind(monitoringCentreName, mcref);
 
             // set up the GUI
             textarea = new JTextArea(20,25);
@@ -68,7 +82,7 @@ class MonitoringCentre extends JFrame {
             getContentPane().add(panel, "Center");
 
             setSize(400, 500);
-            setTitle("Relay Demo Relay");
+            setTitle("Monitoring Centre");
 
             addWindowListener (new java.awt.event.WindowAdapter () {
                 public void windowClosing (java.awt.event.WindowEvent evt) {
@@ -76,10 +90,17 @@ class MonitoringCentre extends JFrame {
                 }
             } );
 
+            // wait for invocations from clients
+            textarea.append("Monitoring Centre online.\n\n");
+
         } catch (Exception e) {
             System.err.println("ERROR: " + e);
             e.printStackTrace(System.out);
         }
+    }
+
+    void addMessage(String message){
+        textarea.append(message);
     }
 
     public static void main(String[] args) {
