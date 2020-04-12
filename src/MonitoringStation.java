@@ -37,7 +37,7 @@ class MonitoringStationServant extends MonitoringStationPOA {
     }
 
     public NoxReading get_reading() {
-        return null;
+        return parent.getCurrentReading();
     }
 
     public void activate() {
@@ -56,6 +56,7 @@ class MonitoringStationServant extends MonitoringStationPOA {
 public class MonitoringStation extends JFrame {
     private JTextArea textarea;
     private JSlider currentReadingSlider;
+    private String msname;
 
     public MonitoringStation(String[] args) {
         try {
@@ -89,12 +90,15 @@ public class MonitoringStation extends JFrame {
             }
 
             // bind the Count object in the Naming service
-            String msname = args[1]+"_"+args[2];
+            msname = args[1]+"_"+args[2];
             NameComponent[] monitoringStationName = nameService.to_name(msname);
             nameService.rebind(monitoringStationName, msref);
 
             String rcname = args[1];
             RegionalCentre regionalCentre = RegionalCentreHelper.narrow(nameService.resolve_str(rcname));
+
+            // Register with regional centre upon activation
+            regionalCentre.add_monitoring_station(msname);
 
             // set up the GUI
             currentReadingSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 0);
@@ -102,12 +106,10 @@ public class MonitoringStation extends JFrame {
             JButton takeReadingButton = new JButton("Take Reading");
             takeReadingButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent evt) {
-                    int currentReading = currentReadingSlider.getValue();
-                    if(currentReading >= 50) {
-                        Date date = new Date();
-                        NoxReading reading = new NoxReading(date.getTime(),msname,currentReading);
+                    NoxReading currentReading = getCurrentReading();
+                    if(currentReading.value >= 50) {
                         textarea.append("High pollutant level detected. Raising Alarm!\n\n");
-                        regionalCentre.raise_alarm(reading);
+                        regionalCentre.raise_alarm(currentReading);
                     }
                 }
             });
@@ -141,6 +143,12 @@ public class MonitoringStation extends JFrame {
             e.printStackTrace(System.out);
         }
     }
+
+    public NoxReading getCurrentReading() {
+        Date date = new Date();
+        NoxReading reading = new NoxReading(date.getTime(),msname,currentReadingSlider.getValue());
+        return reading;
+    };
 
     public static void main(String[] args) {
         final String[] arguments = args;

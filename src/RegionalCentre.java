@@ -4,22 +4,29 @@ import AirMonitoringSystem.MonitoringCentre;
 import org.omg.CosNaming.NameComponent;
 import org.omg.CosNaming.NamingContextExt;
 import org.omg.CosNaming.NamingContextExtHelper;
+import org.omg.CosNaming.NamingContextPackage.CannotProceed;
+import org.omg.CosNaming.NamingContextPackage.InvalidName;
+import org.omg.CosNaming.NamingContextPackage.NotFound;
 import org.omg.PortableServer.*;
 import org.omg.PortableServer.POA;
 import org.omg.CORBA.*;
 
 import javax.swing.*;
 import java.io.*;
+import java.util.ArrayList;
 
 class RegionalCentreServant extends RegionalCentrePOA {
 
     private ORB orb;
     private AirMonitoringSystem.MonitoringCentre monitoringCentre;
     private RegionalCentre parent;
+    private ArrayList<String> listOfStations;
+    NamingContextExt nameService;
 
     RegionalCentreServant(RegionalCentre parentGUI, ORB orb_val) {
         parent = parentGUI;
         orb = orb_val;
+        listOfStations = new ArrayList<>();
 
         try {
             // Get a reference to the Naming service
@@ -32,7 +39,7 @@ class RegionalCentreServant extends RegionalCentrePOA {
 
             // Use NamingContextExt instead of NamingContext. This is
             // part of the Interoperable naming Service.
-            NamingContextExt nameService = NamingContextExtHelper.narrow(nameServiceObj);
+            nameService = NamingContextExtHelper.narrow(nameServiceObj);
             if (nameService == null) {
                 System.out.println("nameService = null");
                 return;
@@ -55,10 +62,6 @@ class RegionalCentreServant extends RegionalCentrePOA {
         return null;
     }
 
-    public ServerRef[] List_of_stations() {
-        return new ServerRef[0];
-    }
-
     public NoxReading[] log() {
         return new NoxReading[0];
     }
@@ -69,11 +72,22 @@ class RegionalCentreServant extends RegionalCentrePOA {
     }
 
     public NoxReading[] take_readings() {
-        return new NoxReading[0];
-    }
+        ArrayList<NoxReading> readings = new ArrayList<>();
+        for (String stationName : listOfStations) {
+            try {
+                AirMonitoringSystem.MonitoringStation monitoringStation = MonitoringStationHelper.narrow(nameService.resolve_str(stationName));
+                NoxReading reading = monitoringStation.get_reading();
+                readings.add(reading);
+            } catch (Exception e) {
+                System.err.println("ERROR: " + e);
+                e.printStackTrace(System.out);
+            }
+        }
+        return readings.toArray(NoxReading[]::new);
+    };
 
-    public void add_monitoring_station(String name, String location) {
-
+    public void add_monitoring_station(String stationName) {
+        listOfStations.add(stationName);
     }
 }
 
@@ -117,8 +131,11 @@ class RegionalCentre extends JFrame {
             NameComponent[] regionalCentreName = nameService.to_name(rcname);
             nameService.rebind(regionalCentreName, rcref);
 
-//            String mcname = "monitoring_centre";
-//            MonitoringCentre monitoringCentre = MonitoringCentreHelper.narrow(nameService.resolve_str(mcname));
+            String mcname = "monitoring_centre";
+            MonitoringCentre monitoringCentre = MonitoringCentreHelper.narrow(nameService.resolve_str(mcname));
+
+            monitoringCentre.register_regional_centre(rcname);
+            //monitoringCentre.register_agency("test", rcname, "test");
 
             // set up the GUI
             textarea = new JTextArea(20, 25);

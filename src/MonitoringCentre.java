@@ -6,18 +6,44 @@ import org.omg.PortableServer.*;
 import org.omg.PortableServer.POA;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
+import java.util.ArrayList;
 
 class MonitoringCentreServant extends MonitoringCentrePOA {
+    private ORB orb;
     private MonitoringCentre parent;
+    private ArrayList<String> listOfCentres;
+    NamingContextExt nameService;
 
-    MonitoringCentreServant(MonitoringCentre parentGUI) {
+    MonitoringCentreServant(MonitoringCentre parentGUI, ORB orb_val) {
         parent = parentGUI;
-    }
+        orb = orb_val;
+        listOfCentres = new ArrayList<>();
 
-    public ServerRef[] List_of_centres() {
-        return new ServerRef[0];
+        try {
+            // Get a reference to the Naming service
+            org.omg.CORBA.Object nameServiceObj =
+                    orb.resolve_initial_references ("NameService");
+            if (nameServiceObj == null) {
+                System.out.println("nameServiceObj = null");
+                return;
+            }
+
+            // Use NamingContextExt instead of NamingContext. This is
+            // part of the Interoperable naming Service.
+            nameService = NamingContextExtHelper.narrow(nameServiceObj);
+            if (nameService == null) {
+                System.out.println("nameService = null");
+                return;
+            }
+
+        } catch (Exception e) {
+            System.err.println("ERROR: " + e);
+            e.printStackTrace(System.out);
+        };
     }
 
     public void raise_alarm(NoxReading alarm_reading) {
@@ -25,11 +51,28 @@ class MonitoringCentreServant extends MonitoringCentrePOA {
     }
 
     public void register_agency(String name, String contact_details, String area_of_interest) {
-
+        parent.addMessage("Centre tested!\n");
     }
 
-    public void register_regional_centre(String name, String location) {
+    public void register_regional_centre(String centre_name) {
+        listOfCentres.add(centre_name);
         parent.addMessage("Regional Centre registered");
+    }
+
+    public void poll_centres() {
+        for (String centreName : listOfCentres) {
+            parent.addMessage("Polling centre: " + centreName + "\n");
+            try {
+                AirMonitoringSystem.RegionalCentre regionalCentre = RegionalCentreHelper.narrow(nameService.resolve_str(centreName));
+                NoxReading[] readings = regionalCentre.take_readings();
+                for (NoxReading reading : readings) {
+                    parent.addMessage("Station: " + reading.station_name + " Reading: " + reading.value + "\n");
+                }
+            } catch (Exception e) {
+                System.err.println("ERROR: " + e);
+                e.printStackTrace(System.out);
+            }
+        }
     }
 
 }
@@ -47,7 +90,7 @@ class MonitoringCentre extends JFrame {
             rootpoa.the_POAManager().activate();
 
             //Create the servant object
-            MonitoringCentreServant monitoringCentreRef = new MonitoringCentreServant(this);
+            MonitoringCentreServant monitoringCentreRef = new MonitoringCentreServant(this, orb);
 
             // Register it with the ORB
             org.omg.CORBA.Object ref = rootpoa.servant_to_reference(monitoringCentreRef);
@@ -74,12 +117,25 @@ class MonitoringCentre extends JFrame {
             nameService.rebind(monitoringCentreName, mcref);
 
             // set up the GUI
+
+            JPanel buttonpanel = new JPanel();
+            JButton pollCentresButton = new JButton("Poll Centres");
+            pollCentresButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent evt) {
+                    monitoringCentreRef.poll_centres();
+                }
+            });
+
             textarea = new JTextArea(20,25);
             JScrollPane scrollpane = new JScrollPane(textarea);
             JPanel panel = new JPanel();
 
+            buttonpanel.add(pollCentresButton);
+
             panel.add(scrollpane);
-            getContentPane().add(panel, "Center");
+
+            getContentPane().add(buttonpanel, "North");
+            getContentPane().add(panel, "South");
 
             setSize(400, 500);
             setTitle("Monitoring Centre");
