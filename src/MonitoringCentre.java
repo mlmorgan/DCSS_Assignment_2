@@ -8,8 +8,6 @@ import org.omg.PortableServer.POA;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.util.ArrayList;
 
 class MonitoringCentreServant extends MonitoringCentrePOA {
@@ -51,12 +49,12 @@ class MonitoringCentreServant extends MonitoringCentrePOA {
     }
 
     public void register_agency(String name, String contact_details, String area_of_interest) {
-        parent.addMessage("Centre tested!\n");
+
     }
 
     public void register_regional_centre(String centre_name) {
         listOfCentres.add(centre_name);
-        parent.addMessage("Regional Centre registered");
+        parent.addMessage("Regional Centre registered\n\n");
     }
 
     public void poll_centres() {

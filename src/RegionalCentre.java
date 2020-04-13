@@ -12,7 +12,6 @@ import org.omg.PortableServer.POA;
 import org.omg.CORBA.*;
 
 import javax.swing.*;
-import java.io.*;
 import java.util.ArrayList;
 
 class RegionalCentreServant extends RegionalCentrePOA {
@@ -21,12 +20,14 @@ class RegionalCentreServant extends RegionalCentrePOA {
     private AirMonitoringSystem.MonitoringCentre monitoringCentre;
     private RegionalCentre parent;
     private ArrayList<String> listOfStations;
+    private ArrayList<NoxReading> logOfReadings;
     NamingContextExt nameService;
 
     RegionalCentreServant(RegionalCentre parentGUI, ORB orb_val) {
         parent = parentGUI;
         orb = orb_val;
         listOfStations = new ArrayList<>();
+        logOfReadings = new ArrayList<>();
 
         try {
             // Get a reference to the Naming service
@@ -67,8 +68,22 @@ class RegionalCentreServant extends RegionalCentrePOA {
     }
 
     public void raise_alarm(NoxReading alarmReading) {
-        parent.addMessage("Alarm raised!\n\n");
-        monitoringCentre.raise_alarm(alarmReading);
+        parent.addMessage("Alarm raised by: " + alarmReading.station_name + "\n\n");
+        boolean falseAlarm = true;
+        for (NoxReading reading : logOfReadings) {
+            if (((alarmReading.date - reading.date) < 30000) && !alarmReading.station_name.equals(reading.station_name)) {
+                falseAlarm = false;
+            }
+        }
+
+        if(falseAlarm) {
+            parent.addMessage("Possible false alarm. Not escalating alert.\n\n");
+        } else {
+            parent.addMessage("Alerted by multiple stations. Escalating alarm!\n\n");
+            monitoringCentre.raise_alarm(alarmReading);
+        }
+
+        logOfReadings.add(alarmReading);
     }
 
     public NoxReading[] take_readings() {
@@ -88,6 +103,7 @@ class RegionalCentreServant extends RegionalCentrePOA {
 
     public void add_monitoring_station(String stationName) {
         listOfStations.add(stationName);
+        parent.addMessage("Monitoring Station registered\n\n");
     }
 }
 
@@ -126,7 +142,6 @@ class RegionalCentre extends JFrame {
             }
 
             // bind the Count object in the Naming service
-            //String rcname = "regionalCentreName";
             String rcname = args[1];
             NameComponent[] regionalCentreName = nameService.to_name(rcname);
             nameService.rebind(regionalCentreName, rcref);
@@ -135,7 +150,6 @@ class RegionalCentre extends JFrame {
             MonitoringCentre monitoringCentre = MonitoringCentreHelper.narrow(nameService.resolve_str(mcname));
 
             monitoringCentre.register_regional_centre(rcname);
-            //monitoringCentre.register_agency("test", rcname, "test");
 
             // set up the GUI
             textarea = new JTextArea(20, 25);
@@ -154,12 +168,7 @@ class RegionalCentre extends JFrame {
                 }
             });
 
-            // wait for invocations from clients
             textarea.append("Regional Centre online.\n\n");
-
-            // remove the "orb.run()" command,
-            // or the server will run but the GUI will not be visible
-            // orb.run();
 
         } catch (Exception e) {
             System.err.println("ERROR: " + e);
