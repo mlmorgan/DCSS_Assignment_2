@@ -74,6 +74,9 @@ class MonitoringCentreServant extends MonitoringCentrePOA {
                 AirMonitoringSystem.RegionalCentre regionalCentre = RegionalCentreHelper.narrow(nameService.resolve_str(centreName));
                 NoxReading[] readings = regionalCentre.take_readings();
                 for (NoxReading reading : readings) {
+                    if (reading.value > 50) {
+                        parent.addMessage("    HIGH POLLUTANT LEVELS DETECTED:\n");
+                    }
                     parent.addMessage("    Station: " + reading.station_name + " Reading: " + reading.value + "\n");
                 }
             } catch (Exception e) {
