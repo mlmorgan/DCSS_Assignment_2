@@ -64,7 +64,7 @@ class RegionalCentreServant extends RegionalCentrePOA {
     }
 
     public NoxReading[] log() {
-        return new NoxReading[0];
+        return logOfReadings.toArray(NoxReading[]::new);
     }
 
     public void raise_alarm(NoxReading alarmReading) {
@@ -160,7 +160,7 @@ class RegionalCentre extends JFrame {
             getContentPane().add(panel, "Center");
 
             setSize(400, 500);
-            setTitle("Regional Centre");
+            setTitle("Regional Centre - " + rcname);
 
             addWindowListener(new java.awt.event.WindowAdapter() {
                 public void windowClosing(java.awt.event.WindowEvent evt) {

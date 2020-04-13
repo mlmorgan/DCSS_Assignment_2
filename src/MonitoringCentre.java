@@ -45,7 +45,7 @@ class MonitoringCentreServant extends MonitoringCentrePOA {
     }
 
     public void raise_alarm(NoxReading alarm_reading) {
-        parent.addMessage("Alarm raised!\n\n");
+        parent.addMessage("Alarm raised by: " + alarm_reading.station_name);
     }
 
     public void register_agency(String name, String contact_details, String area_of_interest) {
@@ -54,23 +54,25 @@ class MonitoringCentreServant extends MonitoringCentrePOA {
 
     public void register_regional_centre(String centre_name) {
         listOfCentres.add(centre_name);
-        parent.addMessage("Regional Centre registered\n\n");
+        parent.addMessage("Regional Centre '" + centre_name + "' registered.\n\n");
     }
 
     public void poll_centres() {
+        parent.addMessage("Polling all centres...\n");
         for (String centreName : listOfCentres) {
-            parent.addMessage("Polling centre: " + centreName + "\n");
+            parent.addMessage("  Polling: " + centreName + "\n");
             try {
                 AirMonitoringSystem.RegionalCentre regionalCentre = RegionalCentreHelper.narrow(nameService.resolve_str(centreName));
                 NoxReading[] readings = regionalCentre.take_readings();
                 for (NoxReading reading : readings) {
-                    parent.addMessage("Station: " + reading.station_name + " Reading: " + reading.value + "\n");
+                    parent.addMessage("    Station: " + reading.station_name + " Reading: " + reading.value + "\n");
                 }
             } catch (Exception e) {
                 System.err.println("ERROR: " + e);
                 e.printStackTrace(System.out);
             }
         }
+        parent.addMessage("\n");
     }
 
 }
@@ -117,7 +119,7 @@ class MonitoringCentre extends JFrame {
             // set up the GUI
 
             JPanel buttonpanel = new JPanel();
-            JButton pollCentresButton = new JButton("Poll Centres");
+            JButton pollCentresButton = new JButton("Poll All Centres");
             pollCentresButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent evt) {
                     monitoringCentreRef.poll_centres();
@@ -133,7 +135,7 @@ class MonitoringCentre extends JFrame {
             panel.add(scrollpane);
 
             getContentPane().add(buttonpanel, "North");
-            getContentPane().add(panel, "South");
+            getContentPane().add(panel, "Center");
 
             setSize(400, 500);
             setTitle("Monitoring Centre");

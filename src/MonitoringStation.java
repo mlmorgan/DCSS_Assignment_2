@@ -117,18 +117,20 @@ public class MonitoringStation extends JFrame {
             textarea = new JTextArea(20, 25);
             JScrollPane scrollpane = new JScrollPane(textarea);
             JPanel textpanel = new JPanel();
+            JLabel alarmThresholdLabel = new JLabel("Over 50% = Alarm Sent");
 
             Date date = new Date();
             date.getTime();
             textpanel.add(scrollpane);
             buttonpanel.add(takeReadingButton);
+            buttonpanel.add(alarmThresholdLabel);
             getContentPane().add(currentReadingSlider, "North");
             getContentPane().add(buttonpanel, "Center");
             getContentPane().add(textpanel, "South");
 
 
             setSize(400, 500);
-            setTitle("Monitoring Station");
+            setTitle("Monitoring Station - " + msname);
 
             addWindowListener(new WindowAdapter() {
                 public void windowClosing(WindowEvent evt) {
