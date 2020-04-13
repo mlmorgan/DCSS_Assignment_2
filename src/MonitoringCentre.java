@@ -6,8 +6,11 @@ import org.omg.PortableServer.*;
 import org.omg.PortableServer.POA;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 class MonitoringCentreServant extends MonitoringCentrePOA {
@@ -54,7 +57,13 @@ class MonitoringCentreServant extends MonitoringCentrePOA {
 
     public void register_regional_centre(String centre_name) {
         listOfCentres.add(centre_name);
+        parent.addCentre(centre_name);
         parent.addMessage("Regional Centre '" + centre_name + "' registered.\n\n");
+    }
+
+    public void register_monitoring_station(String centre_name) {
+        parent.addStation(centre_name);
+        parent.addMessage("Monitoring Station '" + centre_name + "' registered.\n\n");
     }
 
     public void poll_centres() {
@@ -78,7 +87,8 @@ class MonitoringCentreServant extends MonitoringCentrePOA {
 }
 
 class MonitoringCentre extends JFrame {
-    private JTextArea textarea;
+    private JTextArea textArea;
+    private DefaultComboBoxModel rcNameModel, msNameModel;
 
     public MonitoringCentre(String[] args) {
         try {
@@ -118,7 +128,26 @@ class MonitoringCentre extends JFrame {
 
             // set up the GUI
 
-            JPanel buttonpanel = new JPanel();
+            JFrame mainFrame = new JFrame("Monitoring Centre");
+
+            addWindowListener(new java.awt.event.WindowAdapter() {
+                public void windowClosing(java.awt.event.WindowEvent evt) {
+                    System.exit(0);
+                }
+            });
+
+            mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            mainFrame.setSize(700, 400);
+            mainFrame.setLayout(new GridLayout(1, 2));
+
+            JPanel logPanel = new JPanel();
+            JPanel actionPanel = new JPanel();
+
+            logPanel.setLayout(new BoxLayout(logPanel, BoxLayout.PAGE_AXIS));
+            actionPanel.setLayout(new BoxLayout(actionPanel, BoxLayout.PAGE_AXIS));
+
+            textArea = new JTextArea(20,25);
+
             JButton pollCentresButton = new JButton("Poll All Centres");
             pollCentresButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent evt) {
@@ -126,28 +155,86 @@ class MonitoringCentre extends JFrame {
                 }
             });
 
-            textarea = new JTextArea(20,25);
-            JScrollPane scrollpane = new JScrollPane(textarea);
-            JPanel panel = new JPanel();
+            rcNameModel = new DefaultComboBoxModel();
+            JComboBox rcNameList = new JComboBox(rcNameModel);
 
-            buttonpanel.add(pollCentresButton);
-
-            panel.add(scrollpane);
-
-            getContentPane().add(buttonpanel, "North");
-            getContentPane().add(panel, "Center");
-
-            setSize(400, 500);
-            setTitle("Monitoring Centre");
-
-            addWindowListener (new java.awt.event.WindowAdapter () {
-                public void windowClosing (java.awt.event.WindowEvent evt) {
-                    System.exit(0);
+            JButton retrieveLogButton = new JButton("Retrieve Log from Regional Centre");
+            retrieveLogButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent evt) {
+                    String centreName = rcNameList.getSelectedItem().toString();
+                    try {
+                        AirMonitoringSystem.RegionalCentre regionalCentre = RegionalCentreHelper.narrow(nameService.resolve_str(centreName));
+                        NoxReading[] log = regionalCentre.log();
+                        addMessage("Log for " + centreName + ":\n");
+                        displayLog(log);
+                    } catch (Exception e) {
+                        System.err.println("ERROR: " + e);
+                        e.printStackTrace(System.out);
+                    }
                 }
-            } );
+            });
+
+            msNameModel = new DefaultComboBoxModel();
+            JComboBox msNameList = new JComboBox(msNameModel);
+
+            JButton activateButton = new JButton("Activate Station");
+            activateButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent evt) {
+                    String stationName = msNameList.getSelectedItem().toString();
+                    try {
+                        AirMonitoringSystem.MonitoringStation monitoringStation = MonitoringStationHelper.narrow(nameService.resolve_str(stationName));
+                        monitoringStation.activate();
+                    } catch (Exception e) {
+                        System.err.println("ERROR: " + e);
+                        e.printStackTrace(System.out);
+                    }
+                }
+            });
+
+            JButton deactivateButton = new JButton("Deactivate Station");
+            deactivateButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent evt) {
+                    String stationName = msNameList.getSelectedItem().toString();
+                    try {
+                        AirMonitoringSystem.MonitoringStation monitoringStation = MonitoringStationHelper.narrow(nameService.resolve_str(stationName));
+                        monitoringStation.deactivate();
+                    } catch (Exception e) {
+                        System.err.println("ERROR: " + e);
+                        e.printStackTrace(System.out);
+                    }
+                }
+            });
+
+            JButton resetButton = new JButton("Reset Station");
+            resetButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent evt) {
+                    String stationName = msNameList.getSelectedItem().toString();
+                    try {
+                        AirMonitoringSystem.MonitoringStation monitoringStation = MonitoringStationHelper.narrow(nameService.resolve_str(stationName));
+                        monitoringStation.reset();
+                    } catch (Exception e) {
+                        System.err.println("ERROR: " + e);
+                        e.printStackTrace(System.out);
+                    }
+                }
+            });
+
+            logPanel.add(textArea);
+
+            actionPanel.add(pollCentresButton);
+            actionPanel.add(rcNameList);
+            actionPanel.add(retrieveLogButton);
+            actionPanel.add(msNameList);
+            actionPanel.add(activateButton);
+            actionPanel.add(deactivateButton);
+            actionPanel.add(resetButton);
+
+            mainFrame.add(logPanel);
+            mainFrame.add(actionPanel);
+            mainFrame.setVisible(true);
 
             // wait for invocations from clients
-            textarea.append("Monitoring Centre online.\n\n");
+            textArea.append("Monitoring Centre online.\n\n");
 
         } catch (Exception e) {
             System.err.println("ERROR: " + e);
@@ -156,13 +243,25 @@ class MonitoringCentre extends JFrame {
     }
 
     void addMessage(String message){
-        textarea.append(message);
+        textArea.append(message);
+    }
+
+    void addCentre(String name) { rcNameModel.addElement(name);}
+
+    void addStation(String name) { msNameModel.addElement(name);}
+
+    void displayLog(NoxReading[] log) {
+        DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss.SSS");
+        for(NoxReading reading : log) {
+            addMessage("  " + reading.station_name + ": " + reading.value + " at " + formatter.format(reading.date) + "\n");
+        }
+        addMessage("\n");
     }
 
     public static void main(String[] args) {
         final String[] arguments = args;
         java.awt.EventQueue.invokeLater(new Runnable() {
-           public void run() { new MonitoringCentre(arguments).setVisible(true); }
+           public void run() { new MonitoringCentre(arguments); }
         });
     }
 }

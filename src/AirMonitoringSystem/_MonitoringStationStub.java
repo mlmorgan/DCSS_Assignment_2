@@ -5,7 +5,7 @@ package AirMonitoringSystem;
  * Generated from IDL interface "MonitoringStation".
  *
  * @author JacORB IDL compiler V 3.9
- * @version generated at 12 Apr 2020, 11:28:37
+ * @version generated at 13 Apr 2020, 20:49:38
  */
 
 public class _MonitoringStationStub
@@ -493,6 +493,90 @@ public class _MonitoringStationStub
 				try
 				{
 					_result = _localServant.location();
+					if ( _so instanceof org.omg.CORBA.portable.ServantObjectExt) 
+						((org.omg.CORBA.portable.ServantObjectExt)_so).normalCompletion();
+						return _result;
+				}
+				catch (RuntimeException re) 
+				{
+					if ( _so instanceof org.omg.CORBA.portable.ServantObjectExt) 
+						((org.omg.CORBA.portable.ServantObjectExt)_so).exceptionalCompletion(re);
+					throw re;
+				}
+				catch (java.lang.Error err) 
+				{
+					if ( _so instanceof org.omg.CORBA.portable.ServantObjectExt) 
+						((org.omg.CORBA.portable.ServantObjectExt)_so).exceptionalCompletion(err);
+					throw err;
+				}
+				finally
+				{
+					_servant_postinvoke(_so);
+				}
+			}
+
+		}
+
+	}
+
+	public boolean isActivated()
+	{
+		while(true)
+		{
+			if(! this._is_local())
+			{
+				org.omg.CORBA.portable.InputStream _is = null;
+				org.omg.CORBA.portable.OutputStream _os = null;
+				try
+				{
+					_os = _request("_get_isActivated",true);
+					_is = _invoke(_os);
+					return _is.read_boolean();
+				}
+				catch( org.omg.CORBA.portable.RemarshalException _rx )
+					{
+						continue;
+					}
+				catch( org.omg.CORBA.portable.ApplicationException _ax )
+				{
+					String _id = _ax.getId();
+					try
+					{
+						_ax.getInputStream().close();
+					}
+					catch (java.io.IOException e)
+					{
+						throw new RuntimeException("Unexpected exception " + e.toString() );
+					}
+						throw new RuntimeException("Unexpected exception " + _id );
+				}
+				finally
+				{
+					if (_os != null)
+					{
+						try
+						{
+							_os.close();
+						}
+						catch (java.io.IOException e)
+						{
+							throw new RuntimeException("Unexpected exception " + e.toString() );
+						}
+					}
+					this._releaseReply(_is);
+				}
+			}
+
+			else
+			{
+				org.omg.CORBA.portable.ServantObject _so = _servant_preinvoke( "_get_isActivated", _opsClass);
+				if( _so == null )
+					continue;
+				MonitoringStationOperations _localServant = (MonitoringStationOperations)_so.servant;
+				boolean _result;
+				try
+				{
+					_result = _localServant.isActivated();
 					if ( _so instanceof org.omg.CORBA.portable.ServantObjectExt) 
 						((org.omg.CORBA.portable.ServantObjectExt)_so).normalCompletion();
 						return _result;

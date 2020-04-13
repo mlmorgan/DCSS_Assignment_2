@@ -6,7 +6,7 @@ import org.omg.PortableServer.POA;
  * Generated from IDL interface "MonitoringCentre".
  *
  * @author JacORB IDL compiler V 3.9
- * @version generated at 12 Apr 2020, 11:28:37
+ * @version generated at 13 Apr 2020, 20:49:38
  */
 
 public class MonitoringCentrePOATie
@@ -52,6 +52,11 @@ public class MonitoringCentrePOATie
 		}
 		return super._default_POA();
 	}
+	public void register_monitoring_station(java.lang.String station_name)
+	{
+_delegate.register_monitoring_station(station_name);
+	}
+
 	public void raise_alarm(AirMonitoringSystem.NoxReading alarm_reading)
 	{
 _delegate.raise_alarm(alarm_reading);

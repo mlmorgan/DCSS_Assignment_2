@@ -5,7 +5,7 @@ package AirMonitoringSystem;
  * Generated from IDL interface "MonitoringCentre".
  *
  * @author JacORB IDL compiler V 3.9
- * @version generated at 12 Apr 2020, 11:28:37
+ * @version generated at 13 Apr 2020, 20:49:38
  */
 
 public abstract class MonitoringCentrePOA
@@ -15,9 +15,10 @@ public abstract class MonitoringCentrePOA
 	static private final java.util.HashMap<String,Integer> m_opsHash = new java.util.HashMap<String,Integer>();
 	static
 	{
-		m_opsHash.put ( "raise_alarm", Integer.valueOf(0));
-		m_opsHash.put ( "register_regional_centre", Integer.valueOf(1));
-		m_opsHash.put ( "register_agency", Integer.valueOf(2));
+		m_opsHash.put ( "register_monitoring_station", Integer.valueOf(0));
+		m_opsHash.put ( "raise_alarm", Integer.valueOf(1));
+		m_opsHash.put ( "register_regional_centre", Integer.valueOf(2));
+		m_opsHash.put ( "register_agency", Integer.valueOf(3));
 	}
 	private String[] ids = {"IDL:AirMonitoringSystem/MonitoringCentre:1.0"};
 	public AirMonitoringSystem.MonitoringCentre _this()
@@ -43,21 +44,28 @@ public abstract class MonitoringCentrePOA
 			throw new org.omg.CORBA.BAD_OPERATION(method + " not found");
 		switch ( opsIndex.intValue() )
 		{
-			case 0: // raise_alarm
+			case 0: // register_monitoring_station
+			{
+				java.lang.String _arg0=_input.read_string();
+				_out = handler.createReply();
+				register_monitoring_station(_arg0);
+				break;
+			}
+			case 1: // raise_alarm
 			{
 				AirMonitoringSystem.NoxReading _arg0=AirMonitoringSystem.NoxReadingHelper.read(_input);
 				_out = handler.createReply();
 				raise_alarm(_arg0);
 				break;
 			}
-			case 1: // register_regional_centre
+			case 2: // register_regional_centre
 			{
 				java.lang.String _arg0=_input.read_string();
 				_out = handler.createReply();
 				register_regional_centre(_arg0);
 				break;
 			}
-			case 2: // register_agency
+			case 3: // register_agency
 			{
 				java.lang.String _arg0=_input.read_string();
 				java.lang.String _arg1=_input.read_string();

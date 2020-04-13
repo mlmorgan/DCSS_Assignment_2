@@ -5,7 +5,7 @@ package AirMonitoringSystem;
  * Generated from IDL interface "MonitoringStation".
  *
  * @author JacORB IDL compiler V 3.9
- * @version generated at 12 Apr 2020, 11:28:37
+ * @version generated at 13 Apr 2020, 20:49:38
  */
 
 public abstract class MonitoringStationPOA
@@ -21,6 +21,7 @@ public abstract class MonitoringStationPOA
 		m_opsHash.put ( "get_reading", Integer.valueOf(3));
 		m_opsHash.put ( "reset", Integer.valueOf(4));
 		m_opsHash.put ( "_get_location", Integer.valueOf(5));
+		m_opsHash.put ( "_get_isActivated", Integer.valueOf(6));
 	}
 	private String[] ids = {"IDL:AirMonitoringSystem/MonitoringStation:1.0"};
 	public AirMonitoringSystem.MonitoringStation _this()
@@ -82,6 +83,12 @@ _out.write_string( tmpResult1 );
 			_out = handler.createReply();
 			java.lang.String tmpResult2 = location();
 _out.write_string( tmpResult2 );
+				break;
+			}
+			case 6: // _get_isActivated
+			{
+			_out = handler.createReply();
+			_out.write_boolean(isActivated());
 				break;
 			}
 		}

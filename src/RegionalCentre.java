@@ -91,8 +91,10 @@ class RegionalCentreServant extends RegionalCentrePOA {
         for (String stationName : listOfStations) {
             try {
                 AirMonitoringSystem.MonitoringStation monitoringStation = MonitoringStationHelper.narrow(nameService.resolve_str(stationName));
-                NoxReading reading = monitoringStation.get_reading();
-                readings.add(reading);
+                if (monitoringStation.isActivated()) {
+                    NoxReading reading = monitoringStation.get_reading();
+                    readings.add(reading);
+                }
             } catch (Exception e) {
                 System.err.println("ERROR: " + e);
                 e.printStackTrace(System.out);
@@ -103,6 +105,7 @@ class RegionalCentreServant extends RegionalCentrePOA {
 
     public void add_monitoring_station(String stationName) {
         listOfStations.add(stationName);
+        monitoringCentre.register_monitoring_station(stationName);
         parent.addMessage("Monitoring Station registered\n\n");
     }
 }

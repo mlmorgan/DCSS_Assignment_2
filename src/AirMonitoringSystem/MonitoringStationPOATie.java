@@ -6,7 +6,7 @@ import org.omg.PortableServer.POA;
  * Generated from IDL interface "MonitoringStation".
  *
  * @author JacORB IDL compiler V 3.9
- * @version generated at 12 Apr 2020, 11:28:37
+ * @version generated at 13 Apr 2020, 20:49:38
  */
 
 public class MonitoringStationPOATie
@@ -80,6 +80,11 @@ _delegate.reset();
 	public java.lang.String location()
 	{
 		return _delegate.location();
+	}
+
+	public boolean isActivated()
+	{
+		return _delegate.isActivated();
 	}
 
 }

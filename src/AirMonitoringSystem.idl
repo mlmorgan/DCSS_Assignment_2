@@ -11,6 +11,7 @@ module AirMonitoringSystem {
     interface MonitoringStation {
         readonly attribute string name;
         readonly attribute string location;
+        readonly attribute boolean isActivated;
         NoxReading get_reading();
         void activate();
         void deactivate();
@@ -30,5 +31,6 @@ module AirMonitoringSystem {
         void raise_alarm(in NoxReading alarm_reading);
         void register_agency(in string name, in string contact_details, in string area_of_interest);
         void register_regional_centre(in string centre_name);
+        void register_monitoring_station(in string station_name);
     };
 };

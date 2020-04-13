@@ -22,10 +22,12 @@ class MonitoringStationServant extends MonitoringStationPOA {
     private ORB orb;
     private AirMonitoringSystem.RegionalCentre regionalCentre;
     private MonitoringStation parent;
+    private boolean isActivated;
 
     MonitoringStationServant(MonitoringStation parentGUI, ORB orb_val) {
         parent = parentGUI;
         orb = orb_val;
+        isActivated = true;
     }
 
     public String name() {
@@ -36,26 +38,36 @@ class MonitoringStationServant extends MonitoringStationPOA {
         return null;
     }
 
+    public boolean isActivated() {
+        return isActivated;
+    }
+
     public NoxReading get_reading() {
         return parent.getCurrentReading();
     }
 
     public void activate() {
-
+        parent.addMessage("Activating.\n\n");
+        isActivated = true;
+        parent.activateSensor();
     }
 
     public void deactivate() {
-
+        parent.addMessage("Deactivating.\n\n");
+        isActivated = false;
+        parent.deactivateSensor();
     }
 
     public void reset() {
-
+        parent.addMessage("Resetting.\n\n");
+        parent.resetSensor();
     }
 }
 
 public class MonitoringStation extends JFrame {
     private JTextArea textarea;
     private JSlider currentReadingSlider;
+    private JButton takeReadingButton;
     private String msname;
 
     public MonitoringStation(String[] args) {
@@ -103,12 +115,12 @@ public class MonitoringStation extends JFrame {
             // set up the GUI
             currentReadingSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 0);
             JPanel buttonpanel = new JPanel();
-            JButton takeReadingButton = new JButton("Take Reading");
+            takeReadingButton = new JButton("Take Reading");
             takeReadingButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent evt) {
                     NoxReading currentReading = getCurrentReading();
                     if(currentReading.value >= 50) {
-                        textarea.append("High pollutant level detected. Raising Alarm!\n\n");
+                        addMessage("High pollutant level detected. Raising Alarm!\n\n");
                         regionalCentre.raise_alarm(currentReading);
                     }
                 }
@@ -151,6 +163,24 @@ public class MonitoringStation extends JFrame {
         NoxReading reading = new NoxReading(date.getTime(),msname,currentReadingSlider.getValue());
         return reading;
     };
+
+    void addMessage(String message) {
+        textarea.append(message);
+    }
+
+    void activateSensor() {
+        currentReadingSlider.setEnabled(true);
+        takeReadingButton.setEnabled(true);
+    }
+
+    void deactivateSensor() {
+        currentReadingSlider.setEnabled(false);
+        takeReadingButton.setEnabled(false);
+    }
+
+    void resetSensor() {
+        currentReadingSlider.setValue(0);
+    }
 
     public static void main(String[] args) {
         final String[] arguments = args;
