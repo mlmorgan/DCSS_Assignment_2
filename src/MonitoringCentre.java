@@ -25,7 +25,7 @@ class MonitoringCentreServant extends MonitoringCentrePOA {
         listOfCentres = new ArrayList<>();
 
         try {
-            // Get a reference to the Naming service
+            // Get a reference to the naming service
             org.omg.CORBA.Object nameServiceObj =
                     orb.resolve_initial_references ("NameService");
             if (nameServiceObj == null) {
@@ -33,8 +33,7 @@ class MonitoringCentreServant extends MonitoringCentrePOA {
                 return;
             }
 
-            // Use NamingContextExt instead of NamingContext. This is
-            // part of the Interoperable naming Service.
+            // Get the naming service
             nameService = NamingContextExtHelper.narrow(nameServiceObj);
             if (nameService == null) {
                 System.out.println("nameService = null");
@@ -51,9 +50,7 @@ class MonitoringCentreServant extends MonitoringCentrePOA {
         parent.addMessage("Alarm raised by: " + alarm_reading.station_name);
     }
 
-    public void register_agency(String name, String contact_details, String area_of_interest) {
-
-    }
+    public void register_agency(String name, String contact_details, String area_of_interest) { }
 
     public void register_regional_centre(String centre_name) {
         listOfCentres.add(centre_name);
@@ -71,7 +68,10 @@ class MonitoringCentreServant extends MonitoringCentrePOA {
         for (String centreName : listOfCentres) {
             parent.addMessage("  Polling: " + centreName + "\n");
             try {
+                // Gwt the regional centre
                 AirMonitoringSystem.RegionalCentre regionalCentre = RegionalCentreHelper.narrow(nameService.resolve_str(centreName));
+
+                // Poll for readings and iterate through all
                 NoxReading[] readings = regionalCentre.take_readings();
                 for (NoxReading reading : readings) {
                     if (reading.value > 50) {
@@ -116,21 +116,19 @@ class MonitoringCentre extends JFrame {
                 return;
             }
 
-            // Use NamingContextExt which is part of the Interoperable
-            // Naming Service (INS) specification.
+            // Get the naming service
             NamingContextExt nameService = NamingContextExtHelper.narrow(nameServiceObj);
             if (nameService == null) {
                 System.out.println("nameService = null");
                 return;
             }
 
-            // bind the Count object in the Naming service
+            // bind the object in the Naming service
             String name = "monitoring_centre";
             NameComponent[] monitoringCentreName = nameService.to_name(name);
             nameService.rebind(monitoringCentreName, mcref);
 
             // set up the GUI
-
             JFrame mainFrame = new JFrame("Monitoring Centre");
 
             addWindowListener(new java.awt.event.WindowAdapter() {
@@ -166,6 +164,7 @@ class MonitoringCentre extends JFrame {
                 public void actionPerformed(ActionEvent evt) {
                     String centreName = rcNameList.getSelectedItem().toString();
                     try {
+                        // get the regional centre and request its log
                         AirMonitoringSystem.RegionalCentre regionalCentre = RegionalCentreHelper.narrow(nameService.resolve_str(centreName));
                         NoxReading[] log = regionalCentre.log();
                         addMessage("Log for " + centreName + ":\n");
@@ -185,6 +184,7 @@ class MonitoringCentre extends JFrame {
                 public void actionPerformed(ActionEvent evt) {
                     String stationName = msNameList.getSelectedItem().toString();
                     try {
+                        // get the monitoring station and activate it
                         AirMonitoringSystem.MonitoringStation monitoringStation = MonitoringStationHelper.narrow(nameService.resolve_str(stationName));
                         monitoringStation.activate();
                     } catch (Exception e) {
@@ -199,6 +199,7 @@ class MonitoringCentre extends JFrame {
                 public void actionPerformed(ActionEvent evt) {
                     String stationName = msNameList.getSelectedItem().toString();
                     try {
+                        // get the monitoring station and deactivate it
                         AirMonitoringSystem.MonitoringStation monitoringStation = MonitoringStationHelper.narrow(nameService.resolve_str(stationName));
                         monitoringStation.deactivate();
                     } catch (Exception e) {
@@ -213,6 +214,7 @@ class MonitoringCentre extends JFrame {
                 public void actionPerformed(ActionEvent evt) {
                     String stationName = msNameList.getSelectedItem().toString();
                     try {
+                        // get the monitoring station and reset it
                         AirMonitoringSystem.MonitoringStation monitoringStation = MonitoringStationHelper.narrow(nameService.resolve_str(stationName));
                         monitoringStation.reset();
                     } catch (Exception e) {

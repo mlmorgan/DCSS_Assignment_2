@@ -6,7 +6,7 @@ import org.omg.PortableServer.POA;
  * Generated from IDL interface "RegionalCentre".
  *
  * @author JacORB IDL compiler V 3.9
- * @version generated at 13 Apr 2020, 20:49:38
+ * @version generated at 16 Apr 2020, 12:31:26
  */
 
 public class RegionalCentrePOATie
@@ -57,11 +57,6 @@ public class RegionalCentrePOATie
 _delegate.add_monitoring_station(station_name);
 	}
 
-	public java.lang.String name()
-	{
-		return _delegate.name();
-	}
-
 	public void raise_alarm(AirMonitoringSystem.NoxReading alarmReading)
 	{
 _delegate.raise_alarm(alarmReading);
@@ -75,11 +70,6 @@ _delegate.raise_alarm(alarmReading);
 	public AirMonitoringSystem.NoxReading[] log()
 	{
 		return _delegate.log();
-	}
-
-	public java.lang.String location()
-	{
-		return _delegate.location();
 	}
 
 }

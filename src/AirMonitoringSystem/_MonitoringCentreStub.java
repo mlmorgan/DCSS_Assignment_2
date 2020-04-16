@@ -5,7 +5,7 @@ package AirMonitoringSystem;
  * Generated from IDL interface "MonitoringCentre".
  *
  * @author JacORB IDL compiler V 3.9
- * @version generated at 13 Apr 2020, 20:49:38
+ * @version generated at 16 Apr 2020, 12:31:26
  */
 
 public class _MonitoringCentreStub
@@ -32,8 +32,8 @@ public class _MonitoringCentreStub
 				try
 				{
 					_os = _request( "register_monitoring_station", true);
-					java.lang.String tmpResult6 = station_name;
-_os.write_string( tmpResult6 );
+					java.lang.String tmpResult2 = station_name;
+_os.write_string( tmpResult2 );
 					_is = _invoke(_os);
 					return;
 				}
@@ -199,8 +199,8 @@ _os.write_string( tmpResult6 );
 				try
 				{
 					_os = _request( "register_regional_centre", true);
-					java.lang.String tmpResult7 = centre_name;
-_os.write_string( tmpResult7 );
+					java.lang.String tmpResult3 = centre_name;
+_os.write_string( tmpResult3 );
 					_is = _invoke(_os);
 					return;
 				}
@@ -283,12 +283,12 @@ _os.write_string( tmpResult7 );
 				try
 				{
 					_os = _request( "register_agency", true);
-					java.lang.String tmpResult8 = name;
-_os.write_string( tmpResult8 );
-					java.lang.String tmpResult9 = contact_details;
-_os.write_string( tmpResult9 );
-					java.lang.String tmpResult10 = area_of_interest;
-_os.write_string( tmpResult10 );
+					java.lang.String tmpResult4 = name;
+_os.write_string( tmpResult4 );
+					java.lang.String tmpResult5 = contact_details;
+_os.write_string( tmpResult5 );
+					java.lang.String tmpResult6 = area_of_interest;
+_os.write_string( tmpResult6 );
 					_is = _invoke(_os);
 					return;
 				}

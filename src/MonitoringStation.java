@@ -1,6 +1,5 @@
 import AirMonitoringSystem.*;
 
-import AirMonitoringSystem.MonitoringCentre;
 import AirMonitoringSystem.RegionalCentre;
 import org.omg.CosNaming.NameComponent;
 import org.omg.CosNaming.NamingContextExt;
@@ -28,14 +27,6 @@ class MonitoringStationServant extends MonitoringStationPOA {
         parent = parentGUI;
         orb = orb_val;
         isActivated = true;
-    }
-
-    public String name() {
-        return null;
-    }
-
-    public String location() {
-        return null;
     }
 
     public boolean isActivated() {
@@ -93,15 +84,14 @@ public class MonitoringStation extends JFrame {
                 return;
             }
 
-            // Use NamingContextExt instead of NamingContext. This is
-            // part of the Interoperable naming Service.
+            // Get the naming service
             NamingContextExt nameService = NamingContextExtHelper.narrow(nameServiceObj);
             if (nameService == null) {
                 System.out.println("nameService = null");
                 return;
             }
 
-            // bind the Count object in the Naming service
+            // bind the object in the Naming service
             msname = args[1]+"_"+args[2];
             NameComponent[] monitoringStationName = nameService.to_name(msname);
             nameService.rebind(monitoringStationName, msref);

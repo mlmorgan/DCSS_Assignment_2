@@ -38,8 +38,7 @@ class RegionalCentreServant extends RegionalCentrePOA {
                 return;
             }
 
-            // Use NamingContextExt instead of NamingContext. This is
-            // part of the Interoperable naming Service.
+            // Get the naming service
             nameService = NamingContextExtHelper.narrow(nameServiceObj);
             if (nameService == null) {
                 System.out.println("nameService = null");
@@ -55,14 +54,6 @@ class RegionalCentreServant extends RegionalCentrePOA {
 
     }
 
-    public String name() {
-        return null;
-    }
-
-    public String location() {
-        return null;
-    }
-
     public NoxReading[] log() {
         return logOfReadings.toArray(NoxReading[]::new);
     }
@@ -70,6 +61,7 @@ class RegionalCentreServant extends RegionalCentrePOA {
     public void raise_alarm(NoxReading alarmReading) {
         parent.addMessage("Alarm raised by: " + alarmReading.station_name + "\n\n");
         boolean falseAlarm = true;
+        // Check if any alarms have been recorded within 30 seconds and from a different source to the new alarm
         for (NoxReading reading : logOfReadings) {
             if (((alarmReading.date - reading.date) < 30000) && !alarmReading.station_name.equals(reading.station_name)) {
                 falseAlarm = false;
@@ -90,6 +82,7 @@ class RegionalCentreServant extends RegionalCentrePOA {
         ArrayList<NoxReading> readings = new ArrayList<>();
         for (String stationName : listOfStations) {
             try {
+                // Get the monitoring station and request a reading if it is activated
                 AirMonitoringSystem.MonitoringStation monitoringStation = MonitoringStationHelper.narrow(nameService.resolve_str(stationName));
                 if (monitoringStation.isActivated()) {
                     NoxReading reading = monitoringStation.get_reading();
@@ -136,15 +129,14 @@ class RegionalCentre extends JFrame {
                 return;
             }
 
-            // Use NamingContextExt instead of NamingContext. This is
-            // part of the Interoperable naming Service.
+            // UGet the naming service
             NamingContextExt nameService = NamingContextExtHelper.narrow(nameServiceObj);
             if (nameService == null) {
                 System.out.println("nameService = null");
                 return;
             }
 
-            // bind the Count object in the Naming service
+            // Bind the object to the naming service
             String rcname = args[1];
             NameComponent[] regionalCentreName = nameService.to_name(rcname);
             nameService.rebind(regionalCentreName, rcref);

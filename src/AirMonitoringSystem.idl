@@ -9,8 +9,6 @@ module AirMonitoringSystem {
     typedef sequence<NoxReading> Set_of_readings;
 
     interface MonitoringStation {
-        readonly attribute string name;
-        readonly attribute string location;
         readonly attribute boolean isActivated;
         NoxReading get_reading();
         void activate();
@@ -19,8 +17,6 @@ module AirMonitoringSystem {
     };
 
     interface RegionalCentre {
-        readonly attribute string name;
-        readonly attribute string location;
         readonly attribute Log_of_alarm_readings log;
         void raise_alarm(in NoxReading alarmReading);
         Set_of_readings take_readings();

@@ -5,7 +5,7 @@ package AirMonitoringSystem;
  * Generated from IDL interface "RegionalCentre".
  *
  * @author JacORB IDL compiler V 3.9
- * @version generated at 13 Apr 2020, 20:49:38
+ * @version generated at 16 Apr 2020, 12:31:26
  */
 
 public abstract class RegionalCentrePOA
@@ -16,11 +16,9 @@ public abstract class RegionalCentrePOA
 	static
 	{
 		m_opsHash.put ( "add_monitoring_station", Integer.valueOf(0));
-		m_opsHash.put ( "_get_name", Integer.valueOf(1));
-		m_opsHash.put ( "raise_alarm", Integer.valueOf(2));
-		m_opsHash.put ( "take_readings", Integer.valueOf(3));
-		m_opsHash.put ( "_get_log", Integer.valueOf(4));
-		m_opsHash.put ( "_get_location", Integer.valueOf(5));
+		m_opsHash.put ( "raise_alarm", Integer.valueOf(1));
+		m_opsHash.put ( "take_readings", Integer.valueOf(2));
+		m_opsHash.put ( "_get_log", Integer.valueOf(3));
 	}
 	private String[] ids = {"IDL:AirMonitoringSystem/RegionalCentre:1.0"};
 	public AirMonitoringSystem.RegionalCentre _this()
@@ -53,37 +51,23 @@ public abstract class RegionalCentrePOA
 				add_monitoring_station(_arg0);
 				break;
 			}
-			case 1: // _get_name
-			{
-			_out = handler.createReply();
-			java.lang.String tmpResult4 = name();
-_out.write_string( tmpResult4 );
-				break;
-			}
-			case 2: // raise_alarm
+			case 1: // raise_alarm
 			{
 				AirMonitoringSystem.NoxReading _arg0=AirMonitoringSystem.NoxReadingHelper.read(_input);
 				_out = handler.createReply();
 				raise_alarm(_arg0);
 				break;
 			}
-			case 3: // take_readings
+			case 2: // take_readings
 			{
 				_out = handler.createReply();
 				AirMonitoringSystem.Set_of_readingsHelper.write(_out,take_readings());
 				break;
 			}
-			case 4: // _get_log
+			case 3: // _get_log
 			{
 			_out = handler.createReply();
 			AirMonitoringSystem.Log_of_alarm_readingsHelper.write(_out,log());
-				break;
-			}
-			case 5: // _get_location
-			{
-			_out = handler.createReply();
-			java.lang.String tmpResult5 = location();
-_out.write_string( tmpResult5 );
 				break;
 			}
 		}
