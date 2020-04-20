@@ -140,7 +140,7 @@ public class MonitoringStation extends JFrame {
                 }
             });
 
-            textarea.append("Client started.  Click the button to contact relay...\n\n");
+            textarea.append("Monitoring Station started...\n\n");
 
         } catch (Exception e) {
             System.out.println("ERROR : " + e);
@@ -154,21 +154,21 @@ public class MonitoringStation extends JFrame {
         return reading;
     };
 
-    void addMessage(String message) {
+    public void addMessage(String message) {
         textarea.append(message);
     }
 
-    void activateSensor() {
+    public void activateSensor() {
         currentReadingSlider.setEnabled(true);
         takeReadingButton.setEnabled(true);
     }
 
-    void deactivateSensor() {
+    public void deactivateSensor() {
         currentReadingSlider.setEnabled(false);
         takeReadingButton.setEnabled(false);
     }
 
-    void resetSensor() {
+    public void resetSensor() {
         currentReadingSlider.setValue(0);
     }
 

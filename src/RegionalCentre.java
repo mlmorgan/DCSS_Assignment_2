@@ -171,7 +171,7 @@ class RegionalCentre extends JFrame {
         }
     }
 
-    void addMessage(String message) {
+    public void addMessage(String message) {
         textarea.append(message);
     }
 

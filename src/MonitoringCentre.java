@@ -47,7 +47,7 @@ class MonitoringCentreServant extends MonitoringCentrePOA {
     }
 
     public void raise_alarm(NoxReading alarm_reading) {
-        parent.addMessage("Alarm raised by: " + alarm_reading.station_name);
+        parent.addMessage("Alarm raised by: " + alarm_reading.station_name + "\n");
     }
 
     public void register_agency(String name, String contact_details, String area_of_interest) { }
@@ -247,15 +247,15 @@ class MonitoringCentre extends JFrame {
         }
     }
 
-    void addMessage(String message){
+    public void addMessage(String message){
         textArea.append(message);
     }
 
-    void addCentre(String name) { rcNameModel.addElement(name);}
+    public void addCentre(String name) { rcNameModel.addElement(name);}
 
-    void addStation(String name) { msNameModel.addElement(name);}
+    public void addStation(String name) { msNameModel.addElement(name);}
 
-    void displayLog(NoxReading[] log) {
+    public void displayLog(NoxReading[] log) {
         DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss.SSS");
         for(NoxReading reading : log) {
             addMessage("  " + reading.station_name + ": " + reading.value + " at " + formatter.format(reading.date) + "\n");
